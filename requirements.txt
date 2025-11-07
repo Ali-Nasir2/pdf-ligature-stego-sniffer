@@ -1,0 +1,10 @@
+streamlit
+pdfminer.six
+pdfplumber
+fonttools
+pandas
+regex
+jinja2
+wkhtmltopdf
+pytest
+PyMuPDF

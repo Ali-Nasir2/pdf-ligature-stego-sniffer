@@ -1,0 +1,14 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Forensic Report</title></head>
+<body>
+  <h1>PDF Ligature Stego-Sniffer Report</h1>
+  <p>Risk score: {{ score }}</p>
+  <h2>Suspicious characters</h2>
+  <ul>
+  {% for ch in suspicious %}
+    <li>{{ ch.codepoint }} — {{ ch.name }} — page {{ ch.page }}</li>
+  {% endfor %}
+  </ul>
+</body>
+</html>
