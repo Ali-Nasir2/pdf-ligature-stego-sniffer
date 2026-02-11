@@ -477,7 +477,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Unicode Steganography Techniques](https://en.wikipedia.org/wiki/Steganography#Unicode)
 - [Bidirectional Text and Unicode](https://www.unicode.org/reports/tr9/)
 - [Arabic Script and Ligatures](https://www.unicode.org/faq/arabic.html)
-- [Zero-Width Characters in Security](https://www.npmjs.com/package/zero-width-detection)
+- [Zero-Width Characters and Security](https://www.unicode.org/charts/PDF/U2000.pdf)
 
 ---
 
