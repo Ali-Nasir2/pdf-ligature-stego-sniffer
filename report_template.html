@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>PDF Ligature Stego Sniffer – Analysis Report</title>
+
+    <style>
+        :root {
+            --primary: #005f99;
+            --primary-light: #e8f4fb;
+            --danger: #d9534f;
+            --danger-light: #f8d7da;
+            --warning: #f0ad4e;
+            --warning-light: #fff3cd;
+            --success: #5cb85c;
+            --success-light: #d4edda;
+            --gray-dark: #333;
+            --gray: #666;
+            --gray-light: #e7e7e7;
+            --bg: #f3f6fa;
+        }
+
+        body {
+            font-family: "Inter", "Segoe UI", Arial, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 0;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 2.5em auto;
+            background: #fff;
+            border-radius: 14px;
+            padding: 2.5em 3em;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 0.4em;
+            letter-spacing: 0.3px;
+        }
+
+        h2 {
+            color: var(--primary);
+            margin-top: 1.6em;
+            border-left: 5px solid var(--primary);
+            padding-left: 10px;
+        }
+
+        .summary-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.2em;
+            background: var(--primary-light);
+            padding: 1.4em 1.8em;
+            border-radius: 10px;
+            margin-bottom: 2.2em;
+            border: 1px solid #cfe4f2;
+        }
+
+        .stat {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--primary);
+            letter-spacing: 0.2px;
+        }
+
+        .badge {
+            padding: 0.35em 0.8em;
+            border-radius: 30px;
+            font-weight: bold;
+            font-size: 0.95em;
+            color: #fff;
+        }
+
+        .badge.low { background: linear-gradient(135deg, #3ba55c, #2d8f4e); }
+        .badge.medium { background: linear-gradient(135deg, #e0a800, #c69500); }
+        .badge.high { background: linear-gradient(135deg, #c82333, #a71d2a); }
+
+        .card {
+            background: #fafafa;
+            padding: 1.7em 2em;
+            border-radius: 12px;
+            border-left: 5px solid var(--primary-light);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            margin-top: 1.8em;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 1.2em;
+            line-height: 1.6;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.2em;
+            border-radius: 10px;
+            overflow: hidden;
+            font-size: 0.95em;
+        }
+
+        th {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 10px;
+        }
+
+        td {
+            background: #fff;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        tr:nth-child(even) td { background: #f9fbfd; }
+
+        tr:hover td { background: #eef7ff; }
+
+        .heatmap-img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            border-radius: 10px;
+            border: 1px solid #ccc;
+            margin-top: 1em;
+        }
+
+        .invisible-char {
+            background: #fff5d0;
+            color: var(--danger);
+            padding: 3px 7px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        .suspicious {
+            color: var(--danger);
+            font-size: 1.05em;
+            margin-bottom: 0.6em;
+        }
+
+        .font-header {
+            font-size: 1.2em;
+            margin-top: 1em;
+            color: var(--gray-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.4em;
+        }
+
+        code {
+            background: #f1f3f5;
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-family: "JetBrains Mono", monospace;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <h1>🔍 PDF Ligature Stego Sniffer Report</h1>
+
+    <!-- SUMMARY BANNER -->
+    <div class="summary-banner">
+        <div class="stat">📝 <b>Total Characters:</b> {{total_chars}}</div>
+        <div class="stat">🔤 <b>Fonts Used:</b> {{fonts_used}}</div>
+        <div class="stat">🚩 <b>Suspicious Characters:</b> {{suspicious_count}}</div>
+        <div class="stat">⚠️ <b>Risk Level:</b>
+            <span class="badge {% if risk_level == 'HIGH' %}high{% elif risk_level == 'MEDIUM' %}medium{% else %}low{% endif %}">
+                {{risk_level}}
+            </span>
+        </div>
+    </div>
+
+    <!-- GENERAL INFO -->
+    <div class="card">
+        <h2>General Information</h2>
+        <ul>
+            <li><b>Mixed Scripts Detected:</b> {{mixed_scripts_hint}}</li>
+            <li><b>Zero-width Characters:</b> {{zero_width_count}}</li>
+            <li><b>RTL Marks:</b> {{rtl_marks_count}}</li>
+        </ul>
+    </div>
+
+    <!-- RISK ASSESSMENT -->
+    <div class="card">
+        <h2>Risk Assessment</h2>
+        <p><b>Total Score:</b> {{total_score}}/100</p>
+        <p><b>Risk Level:</b>
+            <span class="badge {% if risk_level == 'HIGH' %}high{% elif risk_level == 'MEDIUM' %}medium{% else %}low{% endif %}">
+                {{risk_level}}
+            </span>
+        </p>
+        <ul>
+            {% for factor in score_breakdown %}
+            <li><b>{{factor.name}}:</b> {{factor.score}} points</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- HEATMAP -->
+    <div class="card">
+        <h2>Suspicious Character Heatmap</h2>
+        {% if heatmap_b64 %}
+            <img src="data:image/png;base64,{{heatmap_b64}}" class="heatmap-img">
+        {% else %}
+            <p>No suspicious character positions to display.</p>
+        {% endif %}
+    </div>
+
+    <!-- FONT CHARACTER TABLES -->
+    <div class="card">
+        <h2>Font–Character Usage</h2>
+        {% if font_characters %}
+            {% for font, chars in font_characters.items() %}
+                <div class="font-header">🔡 {{font}}</div>
+                <table>
+                    <tr><th>Character</th><th>Count</th></tr>
+                    {% for char, count in chars.items() %}
+                    <tr>
+                        <td>
+                            {% set cp = char|ord|format_codepoint %}
+                            {% set uname = char|unicodename %}
+                            {% if uname.startswith("ARABIC") or uname.startswith("LATIN") or uname.startswith("DIGIT") %}
+                                {{char}} <span class="char-meta">[U+{{cp}} {{uname}}]</span>
+                            {% else %}
+                                <span class="invisible-char">U+{{cp}} ({{uname}})</span>
+                            {% endif %}
+                        </td>
+                        <td>{{count}}</td>
+                    </tr>
+                    {% endfor %}
+                </table>
+                <p><b>Unique Characters:</b> {{chars|length}}</p>
+            {% endfor %}
+        {% else %}
+            <p>No font–character data found.</p>
+        {% endif %}
+    </div>
+
+    <!-- SUSPICIOUS CHARACTER LIST -->
+    <div class="card">
+        <h2>Suspicious Characters</h2>
+        {% if suspicious %}
+            <p><b>Total:</b> <span class="suspicious">{{suspicious|length}} suspicious character(s)</span></p>
+            <ul>
+                {% for s in suspicious %}
+                <li class="suspicious">
+                    Page {{s.page}}: <b>{{s.codepoint}}</b> ({{s.name}}),
+                    <code>{{s.fontname}}</code>,
+                    Pos <code>{{s.position}}</code>
+                </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p style="color: var(--success); font-weight:bold;">No suspicious characters detected.</p>
+        {% endif %}
+    </div>
+
+</div>
+</body>
+</html>

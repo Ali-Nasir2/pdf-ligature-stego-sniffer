@@ -6,7 +6,7 @@ import base64
 import unicodedata
 import matplotlib.pyplot as plt
 import io
-import fitz  # for byte-level PDF object inspection
+import fitz 
 
 # -------------------------------------------------------
 # ---------- Streamlit Page & Global Styling ------------
@@ -141,7 +141,6 @@ def generate_html_report(result, heatmap_b64=None, suspicious_objects=None):
     risk = result.get("risk_score", {})
     suspicious = result.get("suspicious", [])
     font_characters = result.get("font_characters", {})
-    fonts_report = result.get("fonts_report", [])
 
 
     score_breakdown = [
@@ -392,32 +391,7 @@ def generate_html_report(result, heatmap_b64=None, suspicious_objects=None):
         {% endif %}
     </div>
 
-        <!-- Font Glyph Analysis -->
-    <div class="card">
-        <h2>Font Glyph Analysis</h2>
-        {% if fonts_report %}
-            <table>
-                <tr>
-                    <th>Font Name</th>
-                    <th>Glyph Count</th>
-                    <th>Arabic Glyphs</th>
-                    <th>Latin Glyphs</th>
-                    <th>Flag</th>
-                </tr>
-                {% for f in fonts_report %}
-                <tr>
-                    <td>{{ f.font_name }}</td>
-                    <td>{{ f.glyph_count }}</td>
-                    <td>{{ f.arabic_glyphs }}</td>
-                    <td>{{ f.latin_glyphs }}</td>
-                    <td>{{ f.flag }}</td>
-                </tr>
-                {% endfor %}
-            </table>
-        {% else %}
-            <p>No embedded fonts were available for glyph inspection.</p>
-        {% endif %}
-    </div>
+       
 </div>
 </body>
 </html>
@@ -438,7 +412,6 @@ def generate_html_report(result, heatmap_b64=None, suspicious_objects=None):
         font_characters=font_characters,
         heatmap_b64=heatmap_b64,
         suspicious_objects=suspicious_objects or [],
-        fonts_report=fonts_report   # ← just this
 
     )
 

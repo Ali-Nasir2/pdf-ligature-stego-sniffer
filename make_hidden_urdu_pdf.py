@@ -4,7 +4,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import os
 
-def make_hidden_urdu_pdf(path="data/benign/sample2.pdf"):
+def make_hidden_urdu_pdf(path="data/benign/sample3.pdf"):
     # Register a simple system font
     font_path = "C:/Windows/Fonts/arial.ttf"
     pdfmetrics.registerFont(TTFont("Arial", font_path))
@@ -36,12 +36,23 @@ def make_hidden_urdu_pdf(path="data/benign/sample2.pdf"):
         f"{RLE}اختتام پر دعا ہے کہ اللہ ہمیں علم میں برکت دے اور تحقیق میں کامیابی عطا فرمائے۔ آمین۔{PDF_END}\n"
     )
 
+    # --- Extra payload to trigger BYTE-LEVEL flags ---
+
+    # 1) Explicit /JBIG2Decode marker so your flag_suspicious_pdf_objects()
+    #    sees b'/JBIG2Decode' in the raw object text.
+    suspicious_marker = "/JBIG2Decode hidden payload marker for testing"
+
+    # 2) A small string with high-byte characters (0x80–0x8F) to help the
+    #    any(b > 127 for b in obj_str.encode(...)) condition.
+    binary_payload = "".join(chr(b) for b in range(0x80, 0x90))
+
     # Prepare output path
     os.makedirs(os.path.dirname(path), exist_ok=True)
     c = canvas.Canvas(path, pagesize=A4)
     c.setFont("Arial", 15)
     y = 800
 
+    # Write the main Urdu/English text
     for line in text.split("\n"):
         line = line.strip()
         if not line:
@@ -49,6 +60,17 @@ def make_hidden_urdu_pdf(path="data/benign/sample2.pdf"):
             continue
         c.drawString(60, y, line)
         y -= 24
+
+    # Leave a small gap
+    y -= 30
+
+    # Write the suspicious marker line (visible text but used only to trigger flags)
+    c.drawString(60, y, suspicious_marker)
+    y -= 24
+
+    # Write the “binary-ish” payload line (may render as weird boxes or nothing)
+    c.drawString(60, y, binary_payload)
+    y -= 24
 
     c.save()
     print(f"✅ Hidden-character Urdu PDF created successfully at: {path}")

@@ -7,6 +7,7 @@ from bidi.algorithm import get_display
 import os
 
 def generate_textual_urdu_pdf(path="data/benign/sample2.pdf"):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     font_path = "fonts/JameelNooriNastaleeq.ttf"
 
     pdfmetrics.registerFont(TTFont("UrduFont", font_path))

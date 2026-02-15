@@ -21,6 +21,6 @@ def embed_urdu_font(src_pdf, font_path, out_pdf):
 if __name__ == "__main__":
     embed_urdu_font(
         src_pdf="data/benign/sample_fonttest.pdf",       # your existing Urdu PDF
-        font_path="fonts/NotoNaskhArabic-Regular.ttf",   # path to Urdu font
+        font_path="fonts/fonts/NotoNaskhArabic-Regular.ttf",   # path to Urdu font
         out_pdf="data/benign/sample_fonttest_embedded.pdf"
     )

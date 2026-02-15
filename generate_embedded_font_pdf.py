@@ -4,11 +4,11 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 import os
 
-def make_embedded_font_pdf(path="data/benign/sample_fonttest.pdf"):
+def make_embedded_font_pdf(path="data/benign/sample__2.pdf"):
     os.makedirs(os.path.dirname(path), exist_ok=True)
 
     # Use an Urdu-supporting font (place the file in fonts/)
-    font_path = "fonts/NotoNaskhArabic-Regular.ttf"  # or JameelNooriNastaleeq.ttf
+    font_path = "fonts/fonts/NotoNaskhArabic-Regular.ttf"  # or JameelNooriNastaleeq.ttf
     pdfmetrics.registerFont(TTFont("UrduFont", font_path))
 
     c = canvas.Canvas(path, pagesize=A4)
