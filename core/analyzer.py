@@ -9,7 +9,11 @@ def _unicode_name(ch: str) -> str:
     return unicodedata.name(ch, "")
 
 def iter_pdf_chars(pdf_file) -> List[Dict[str, Any]]:
-    
+    """
+    Returns list of per-character records:
+      page, char, codepoint, name, fontname, size, x0,y0,x1,y1
+    pdf_file: path or file-like (BytesIO)
+    """
     # Reset file pointer if file-like
     if not isinstance(pdf_file, (str, bytes)):
         try:

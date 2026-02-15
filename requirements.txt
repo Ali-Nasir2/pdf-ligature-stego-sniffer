@@ -5,6 +5,7 @@ fonttools
 pandas
 regex
 jinja2
+matplotlib
 wkhtmltopdf
 pytest
 PyMuPDF
